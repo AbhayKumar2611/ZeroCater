@@ -13,6 +13,8 @@ const Home = () => {
   const [servingsFilter, setServingsFilter] = useState("");
   const [mealTypeFilter, setMealTypeFilter] = useState("");
   const [sortOptions, setSortOptions] = useState(""); // new state for sorting options
+  const [currentPage, setCurrentPage] = useState(1);
+  const numberOfRecipesPerPage = 6;
 
   const fetchApi = async () => {
     try {
@@ -128,6 +130,15 @@ const Home = () => {
 
     setfilteredResults(filtered);
   }, [difficultyFilter, ratingFilter, servingsFilter, mealTypeFilter, results]);
+
+  // Pagination Logic...
+  const indexOfLastRecipe = currentPage * numberOfRecipesPerPage;
+  const indexOfFirstRecipe = indexOfLastRecipe - numberOfRecipesPerPage;
+  const currentItems = filteredResults.slice(
+    indexOfFirstRecipe,
+    indexOfLastRecipe
+  );
+  const totalPages = Math.ceil(filteredResults.length / numberOfRecipesPerPage);
 
   if (loading)
     return (
@@ -281,8 +292,8 @@ const Home = () => {
           background: "lightblue",
         }}
       >
-        {filteredResults.length > 0 &&
-          filteredResults.map((result) => {
+        {currentItems.length > 0 &&
+          currentItems.map((result) => {
             return (
               <div
                 key={result.id}
@@ -365,6 +376,33 @@ const Home = () => {
               </div>
             );
           })}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          paddingBottom: "20px",
+          gap: "20px",
+          width: "20%",
+          margin: "auto",
+          alignItems: "center",
+          // border: "1px solid green",
+        }}
+      >
+        <button
+          onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+          style={{ padding: "6px", cursor: "pointer", borderRadius: "5px" }}
+        >
+          Previous
+        </button>
+        <h3>
+          Page {currentPage} out of {totalPages}
+        </h3>
+        <button
+          onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
+          style={{ padding: "6px", cursor: "pointer", borderRadius: "5px" }}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
