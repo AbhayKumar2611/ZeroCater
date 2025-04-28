@@ -12,6 +12,7 @@ const Home = () => {
   const [ratingFilter, setRatingFilter] = useState("");
   const [servingsFilter, setServingsFilter] = useState("");
   const [mealTypeFilter, setMealTypeFilter] = useState("");
+  const [sortOptions, setSortOptions] = useState(""); // new state for sorting options
 
   const fetchApi = async () => {
     try {
@@ -55,6 +56,31 @@ const Home = () => {
 
     return () => clearTimeout(timer);
   }, [text, results]);
+
+  // sorting function
+  const sortResults = (option) => {
+    let sortedResults = [...filteredResults];
+
+    if (option === "servingAsc") {
+      sortedResults.sort((a, b) => a.servings - b.servings);
+    } else if (option === "servingDesc") {
+      sortedResults.sort((a, b) => b.servings - a.servings);
+    } else if (option === "caloriesAsc") {
+      sortedResults.sort((a, b) => a.caloriesPerServing - b.caloriesPerServing);
+    } else if (option === "caloriesDesc") {
+      sortedResults.sort((a, b) => b.caloriesPerServing - a.caloriesPerServing);
+    } else if (option === "ratingAsc") {
+      sortedResults.sort((a, b) => a.rating - b.rating);
+    } else if (option === "ratingDesc") {
+      sortedResults.sort((a, b) => b.rating - a.rating);
+    }
+
+    setfilteredResults(sortedResults);
+  };
+
+  useEffect(() => {
+    sortResults(sortOptions); // Apply sorting when the option changes
+  }, [sortOptions]);
 
   // Filter Logic based on selected filters
   useEffect(() => {
@@ -222,6 +248,26 @@ const Home = () => {
             <option value="Breakfast">Breakfast</option>
             <option value="Lunch">Lunch</option>
             <option value="Dinner">Dinner</option>
+          </select>
+
+          {/* Sorting Functionality */}
+          <select
+            value={sortOptions}
+            onChange={(e) => setSortOptions(e.target.value)}
+            style={{
+              height: "30px",
+              width: "150px",
+              borderRadius: "5px",
+              fontSize: "20px",
+            }}
+          >
+            <option value="">Sort By</option>
+            <option value="servingAsc">Servings : Low to High</option>
+            <option value="servingDesc">Servongs : High to Low</option>
+            <option value="caloriesAsc">Calories : Low to High</option>
+            <option value="caloriesDesc">Calories : High to Low</option>
+            <option value="ratingAsc">Rating : Low to High</option>
+            <option value="ratingDesc">Rating : High to Low</option>
           </select>
         </div>
       </div>
